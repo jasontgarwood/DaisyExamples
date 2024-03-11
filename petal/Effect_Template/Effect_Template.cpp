@@ -3,8 +3,14 @@
 
 using namespace daisy;
 using namespace daisysp;
+using namespace daisy::seed;
 
+//init hardware
 DaisyPod hw;
+static Switch button1;
+bool button1On = false;
+static GPIO LED1;
+
 
 //declare effects you'd like to use
 Flanger effect1;
@@ -29,6 +35,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
 		out[0][i] = effect1.Process(output);
 	}
+
 }
 
 
@@ -36,12 +43,14 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 ////////// Main Function that initializes Daisy and effects //////////
 int main(void)
 {
-	//Daisy Initialization 
+	//hardware Initialization 
 	hw.Init();
 	hw.SetAudioBlockSize(4); // number of samples handled per callback
 	hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
 	hw.StartAdc();
 	hw.StartAudio(AudioCallback);
+	LED1.Init(D21, GPIO::Mode::OUTPUT);
+    button1.Init(D26, 1000);
 
 	//initialize effects and set parameters
 	effect1.Init(hw.AudioSampleRate());
@@ -49,5 +58,9 @@ int main(void)
 	effect1.SetLfoDepth(0.5f);
 	effect1.SetFeedback(0.83f);
 
-	while(1) {}
+	while(1) {
+		button1.Debounce();
+    	button1On = button1.Pressed();
+		LED1.Write(button1On);
+	}
 }
