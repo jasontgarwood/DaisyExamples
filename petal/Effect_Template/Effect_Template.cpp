@@ -17,6 +17,9 @@ float effect1Freq;
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
 	hw.ProcessAllControls();
+	// Analog to digital conversion to read the potentiomenters on a scale of 0-1
+	effect1Freq = hw.knob1.Process(); 
+
 	for (size_t i = 0; i < size; i++)
 	{
 		float output;
@@ -28,7 +31,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 	}
 }
 
-////////// Processes Analog to Digital converter so the DS can read the potentiometers //////////
+
 
 ////////// Main Function that initializes Daisy and effects //////////
 int main(void)
