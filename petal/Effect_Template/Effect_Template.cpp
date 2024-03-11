@@ -16,15 +16,14 @@ static GPIO LED1;
 Flanger effect1;
 
 //declare effect variables you'd like to change
-float effect1Freq;
+float effect1Var1;
 
 
 ////////// Sets audio input to output and applies effects when button is active) //////////
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
 	hw.ProcessAllControls();
-	// Analog to digital conversion to read the potentiomenters on a scale of 0-1
-	effect1Freq = hw.knob1.Process(); 
+	//effect1Var1 = hw.GetKnobValue(daisy::DaisyPod::Knob 1);
 
 	for (size_t i = 0; i < size; i++)
 	{
@@ -52,15 +51,18 @@ int main(void)
 	LED1.Init(D21, GPIO::Mode::OUTPUT);
     button1.Init(D26, 1000);
 
+	
 	//initialize effects and set parameters
 	effect1.Init(hw.AudioSampleRate());
-	effect1.SetLfoFreq(0.33f);
+	//effect1.SetLfoFreq(effect1Var1);
+	effect1.SetLfoFreq(0.8f);
 	effect1.SetLfoDepth(0.5f);
 	effect1.SetFeedback(0.83f);
 
 	while(1) {
 		button1.Debounce();
     	button1On = button1.Pressed();
+		//LED1.Write(button1On && effect1Var1 > 0.5f);
 		LED1.Write(button1On);
 	}
 }
